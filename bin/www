@@ -3,18 +3,12 @@
 const mutex = require('node-mutex')();
 const http = require('http');
 const httpProxy = require('http-proxy');
-//
-// Create your proxy server and set the target in the options.
-//
-var proxy = httpProxy.createProxyServer({});
 
-//
-// Create your custom server and just call `proxy.web()` to proxy
-// a web request to the target passed in the options
-// also you can use `proxy.ws()` to proxy a websockets request
-//
-var server = http.createServer(function (req, res) {
-    mutex.lock(`proxy-lock-1`)
+// noinspection JSUnresolvedFunction
+const proxy = httpProxy.createProxyServer({});
+const server = http.createServer(function (req, res) {
+    mutex
+        .lock(`proxy-lock-1`)
         .then(function (unlock) {
             let timeout = setTimeout(() => unlock(), 1000);
             proxy.web(req, res, {target: `https://${req.headers.subdomain}.amocrm.ru/api/v2${req.url}`});
